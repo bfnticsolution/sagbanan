@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCode WARI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style> 
+                /* Reset CSS */
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+        
+                body {
+                    font-family: Arial, sans-serif;
+                    background: linear-gradient(135deg, #1436a5, #1e3a8a);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    color: #333;
+                }
+        
+                .form_main {
+                    width: 100%;
+                    max-width: 400px;
+                    background: #ffffff;
+                    padding: 30px;
+                    border-radius: 20px;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                    text-align: center;
+                    position: relative;
+                    overflow: hidden;
+                }
+        
+                .form_main::before {
+                    content: "";
+                    position: absolute;
+                    width: 200px;
+                    height: 300px;
+                    background: #1436a5;
+                    transform: rotate(45deg);
+                    left: -180px;
+                    bottom: 30px;
+                    border-radius: 30px;
+                    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
+                    z-index: 1;
+                }
+        
+                .heading {
+                    font-size: 2em;
+                    color: #f39c12; /* Jaune du logo */
+                    font-weight: 700;
+                    margin-bottom: 20px;
+                    z-index: 2;
+                    position: relative;
+                }
+        
+                .heading1 {
+                    font-size: 1.5em;
+                    color: #f8f8f8;
+                    font-weight: 700;
+                    margin-bottom: 10px;
+                    z-index: 2;
+                    position: relative;
+                }
+        
+                .inputContainer {
+                    width: 100%;
+                    position: relative;
+                    margin: 15px 0;
+                    z-index: 2;
+                }
+        
+                .inputIcon {
+                    position: absolute;
+                    left: 10px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    color: #f39c12; /* Jaune du logo */
+                    z-index: 3;
+                }
+        
+                .inputField {
+                    width: 100%;
+                    height: 40px;
+                    padding-left: 35px;
+                    border: 2px solid #6b7280;
+                    border-radius: 10px;
+                    font-size: 1.1em;
+                    color: #f39c12; /* Jaune du logo */
+                    background: transparent;
+                    transition: border-color 0.3s;
+                }
+        
+                .inputField:focus {
+                    outline: none;
+                    border-color: #1436a5; /* Bleu du logo */
+                }
+        
+                .inputField::placeholder {
+                    color: #6b7280;
+                }
+        
+                .btn-primary, .modal-btn {
+                    width: 100%;
+                    height: 50px;
+                    background: #1436a5; /* Bleu du logo */
+                    border: none;
+                    border-radius: 10px;
+                    color: white;
+                    font-size: 1em;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: background-color 0.3s;
+                    margin: 20px 0;
+                    z-index: 2;
+                    position: relative;
+                }
+        
+                .btn-primary:hover, .modal-btn:hover {
+                    background: #1e3a8a; /* Bleu plus foncé du logo */
+                }
+        
+                .hidden {
+                    display: none;
+                }
+        
+                .user-info-balance {
+                    background: #f39c12; /* Jaune du logo */
+                    padding: 20px;
+                    border-radius: 10px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                    color: white;
+                    align-items: flex-start;
+                    font-weight: 500;
+                    border: 2px solid #1e3a8a;
+                }
+        
+                #balanceAmount {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+        
+                #toggleBalanceIcon {
+                    cursor: pointer;
+                    color: #28a745;
+                    transition: color 0.3s;
+                }
+        
+                #toggleBalanceIcon:hover {
+                    color: #218838;
+                }
+        
+                .modal {
+                    display: none;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.5);
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                }
+        
+                .modal-content {
+                    background: #fff;
+                    padding: 20px;
+                    border-radius: 10px;
+                    text-align: center;
+                    max-width: 400px;
+                    width: 90%;
+                    animation: fadeIn 0.3s;
+                }
+        
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(-20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+        
+                .modal-icon {
+                    font-size: 2em;
+                    margin-bottom: 10px;
+                }
+        
+                .modal-icon.success {
+                    color: #28a745;
+                }
+        
+                .modal-icon.error {
+                    color: #dc3545;
+                }
+        
+                .modal-button {
+                    margin-top: 20px;
+                    padding: 10px 50px;
+                    background: #28a745;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    transition: background-color 0.3s;
+                }
+        
+                .modal-button:hover {
+                    background: #218838;
+                }
+        
+                .close {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    font-size: 24px;
+                    cursor: pointer;
+                    color: #aaa;
+                    transition: color 0.3s;
+                }
+        
+                .close:hover {
+                    color: #333;
+                }
+        
+                .loader {
+                    border: 4px solid #f3f3f3;
+                    border-top: 4px solid #3498db;
+                    border-radius: 50%;
+                    width: 40px;
+                    height: 40px;
+                    animation: spin 1s linear infinite;
+                }
+        
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+        
+                .operation-buttons {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 10px;
+                }
+        
+                .operation-buttons button {
+                    width: 100%;
+                    padding: 15px;
+                    font-size: 1em;
+                }
+        
+                .loader-modal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.8);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                }
+        
+                .logo {
+                    display: block;
+                    margin: 0 auto 20px;
+                    width: 100px;
+                }
+        
+                /* Media Queries */
+                @media (max-width: 768px) {
+                    .form_main {
+                        width: 90%;
+                        padding: 20px;
+                    }
+        
+                    .heading {
+                        font-size: 1.5em;
+                    }
+        
+                    .heading1 {
+                        font-size: 1.2em;
+                    }
+        
+                    .inputField {
+                        font-size: 1em;
+                    }
+        
+                    .btn-primary, .modal-btn {
+                        height: 45px;
+                        font-size: 0.9em;
+                    }
+        
+                    .modal-content {
+                        width: 95%;
+                    }
+                }
+    </style>
+</head>
+<body>
+    <div class="form_main">
+        <!-- Section de connexion -->
+        <div id="login-section">
+            <img src="https://www2.0zz0.com/2025/03/13/18/485189406.png" alt="Waripay Logo" class="logo">
+            <h2 class="heading">Connexion</h2>
+            <form id="login-form">
+                <div class="inputContainer" id="phone-container">
+                    <i class="inputIcon fas fa-phone"></i>
+                    <input type="number" id="phone" class="inputField" placeholder="Téléphone" required>
+                </div>
+                <div class="inputContainer">
+                    <i class="inputIcon fas fa-lock"></i>
+                    <input type="password" id="password" class="inputField" placeholder="Code Secret" required>
+                </div>
+                <button type="submit" class="btn-primary">Se connecter</button>
+            </form>
+            <p id="login-message"></p>
+            <p>Pas de compte ? <a href="#" onclick="showSignupForm()">Créer un Compte WariPay</a></p>
+        </div>
+        <!-- Section d'inscription -->
+        <div id="register-section" class="hidden">
+            <img src="https://www2.0zz0.com/2025/03/13/18/485189406.png" alt="Waripay Logo" class="logo">
+            <h2 class="heading">Inscription</h2>
+            <form id="register-form">
+                <div class="inputContainer">
+                    <i class="inputIcon fas fa-phone"></i>
+                    <input type="number" id="register-phone" class="inputField" placeholder="Téléphone" required>
+                </div>
+                <div class="inputContainer">
+                    <i class="inputIcon fas fa-user"></i>
+                    <input type="text" id="register-name" class="inputField" placeholder="Nom" required>
+                </div>
+                <div class="inputContainer">
+                    <i class="inputIcon fas fa-lock"></i>
+                    <input type="password" id="register-password" class="inputField" placeholder="Code Secret" required>
+                </div>
+                <button type="submit" class="btn-primary">Créer un Compte WariPay</button>
+            </form>
+            <p id="register-message"></p>
+            <p>Vous avez déjà un compte ? <a href="#" onclick="showLoginForm()">Se connecter</a></p>
+        </div>
+        <!-- Section Gestion de Compte -->
+        <div id="account-section" class="hidden">
+            <div class="user-info-balance">
+                <p class="heading1">Mon Compte</p>
+                <div class="user-info">
+                    <p><strong>Nom :</strong> <span id="account-name"></span></p>
+                    <p><strong>Téléphone :</strong> <span id="account-phone"></span></p>
+                </div>
+                <div class="balance">
+                    <h3>Solde</h3>
+                    <p id="balanceAmount">
+                        <span id="balanceText">******* F</span>
+                        <i class="fas fa-eye" id="toggleBalanceIcon" onclick="toggleBalanceVisibility()"></i>
+                    </p>
+                </div>
+            </div>
+            <h3>Effectuer une opération</h3>
+            <div id="operation-buttons" class="operation-buttons">
+                <button class="modal-btn" onclick="openOperationModal('transfert')"><i class="fas fa-exchange-alt"></i> Transfert</button>
+                <button class="modal-btn" onclick="window.location.href='depot.html'"><i class="fas fa-plus-circle"></i> Dépôt</button>
+                <button class="modal-btn" data-modal="modal-forfait"><i class="fas fa-sim-card"></i> Forfait</button>
+                <button class="modal-btn" data-modal="modal-retrait"><i class="fas fa-minus-circle"></i> Retrait</button>
+                <button class="modal-btn" data-modal="modal-unite"><i class="fas fa-mobile-alt"></i> Unité</button>
+                <button class="modal-btn" data-modal="modal-tv"><i class="fas fa-tv"></i> Divertissement</button>
+                <button class="modal-btn" data-modal="modal-facture"><i class="fas fa-file-invoice"></i> Facture</button>
+                <button class="modal-btn" data-modal="modal-1xbet"><i class="fas fa-ticket-alt"></i> Jeux </button>
+                <button class="modal-btn" data-modal="modal-transfertinter"><i class="fas fa-globe-americas"></i> International</button>
+            </div>
+            <button id="show-history-btn" class="btn-primary">Afficher l'historique</button>
+            <button class="btn-primary" onclick="logoutUser()">Déconnexion</button>
+        </div>
+    </div>
+
+    <!-- Modal pour Forfait -->
+    <div id="modal-forfait" class="modal">
+        <div class="modal-content">
+            <div class="heading">Achat de Forfait</div>
+            <div class="inputContainer">
+                <label for="operator">Choisissez l'opérateur :</label>
+                <select id="operator" class="inputField">
+                    <option value="">Sélectionnez un opérateur</option>
+                    <option value="orange">Orange</option>
+                    <option value="moov">Moov</option>
+                    <option value="telecel">Telecel</option>
+                </select>
+            </div>
+            <div class="inputContainer">
+                <label for="package">Choisissez le forfait :</label>
+                <select id="package" class="inputField">
+                    <option value="">Sélectionnez un forfait</option>
+                </select>
+            </div>
+            <div class="inputContainer">
+                <label for="destinationNumber">Numéro destinataire :</label>
+                <input type="text" id="destinationNumber" class="inputField" placeholder="Entrez le numéro">
+            </div>
+            <div class="inputContainer">
+                <label for="wariPayAccount">Numéro de compte WariPay :</label>
+                <input type="text" id="wariPayAccount" class="inputField" placeholder="Entrez le numéro de compte">
+            </div>
+            <button class="btn-primary" onclick="submitForm()">Acheter</button>
+            <button class="btn-secondary" onclick="goToHome()">Retour à l'accueil</button>
+        </div>
+    </div>
+
+    <!-- Modal pour Retrait -->
+    <div id="modal-retrait" class="modal">
+        <div class="modal-content">
+            <h2 class="heading">Retrait</h2>
+            <div class="inputContainer" id="operatorContainer">
+                <i class="inputIcon fas fa-sim-card"></i>
+                <select id="operator" class="inputField" required>
+                    <option value="" disabled selected>Sélectionnez un opérateur</option>
+                    <option value="Orange Money">Orange Money</option>
+                    <option value="Moov Money">Moov Money</option>
+                    <option value="Telecel Money">Telecel Money</option>
+                </select>
+            </div>
+            <div class="inputContainer" id="retraitAmountContainer">
+                <i class="inputIcon fas fa-money-bill"></i>
+                <input type="number" id="retraitAmount" class="inputField" placeholder="Montant du retrait" required oninput="calculateFee()">
+            </div>
+            <div class="inputContainer" id="retraitPhoneContainer">
+                <i class="inputIcon fas fa-phone"></i>
+                <input type="tel" id="retraitPhone" class="inputField" placeholder="Numéro destinataire" required>
+            </div>
+            <div class="inputContainer" id="waripayAccountContainer">
+                <i class="inputIcon fas fa-credit-card"></i>
+                <input type="text" id="waripayAccount" class="inputField" placeholder="Numéro de compte Waripay" required>
+            </div>
+            <div class="fee-display" id="feeDisplay">Frais: 0 XOF</div>
+            <button class="btn-primary" onclick="executeRetrait()">Confirmer le Retrait</button>
+           
+        </div>
+    </div>
+
+    <!-- Modal pour Dépôt -->
+    <div id="modal-depot" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Dépôt</h2>
+            <p>Contenu détaillé de la page Dépôt...</p>
+        </div>
+    </div>
+
+    <!-- Modal pour Transfert International -->
+    <div id="modal-transfertinter" class="modal">
+        <div class="modal-content">
+            <h2 class="heading">Transfert International</h2>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-globe"></i>
+                <select id="destinationCountry" class="inputField" onchange="updateOperators()" required>
+                    <option value="" disabled selected>Sélectionnez le pays de destination</option>
+                    <option value="Burkina Faso">Burkina Faso</option>
+                    <option value="Côte d'Ivoire">Côte d'Ivoire</option>
+                    <option value="Niger">Niger</option>
+                    <option value="Mali">Mali</option>
+                    <option value="Togo">Togo</option>
+                </select>
+            </div>
+            <div class="inputContainer" id="operatorContainer">
+                <i class="inputIcon fas fa-sim-card"></i>
+                <select id="destinationOperator" class="inputField" required>
+                    <option value="" disabled selected>Sélectionnez l'opérateur</option>
+                </select>
+            </div>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-phone"></i>
+                <input type="tel" id="recipientPhone" class="inputField" placeholder="Numéro destinataire" required>
+            </div>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-globe"></i>
+                <select id="countryCode" class="inputField" required>
+                    <option value="" disabled selected>Code pays</option>
+                    <option value="+226">Burkina Faso (+226)</option>
+                    <option value="+225">Côte d'Ivoire (+225)</option>
+                    <option value="+227">Niger (+227)</option>
+                    <option value="+223">Mali (+223)</option>
+                    <option value="+228">Togo (+228)</option>
+                </select>
+            </div>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-money-bill"></i>
+                <input type="number" id="transferAmount" class="inputField" placeholder="Montant du transfert" required oninput="calculateFee()">
+            </div>
+            <div class="inputContainer" id="waripayAccountContainer">
+                <i class="inputIcon fas fa-credit-card"></i>
+                <input type="text" id="waripayAccount" class="inputField" placeholder="Numéro de compte Waripay" required>
+            </div>
+            <div class="fee-display" id="feeDisplay">Frais: 0 XOF</div>
+            <button class="btn-primary" onclick="executeInternationalTransfer()">Confirmer le Transfert</button>
+           
+        </div>
+    </div>
+
+    <!-- Modal pour Unité -->
+    <div id="modal-unite" class="modal">
+        <div class="modal-content">
+            <h2 class="heading">Achat d'Unités</h2>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-sim-card"></i>
+                <select id="operator" class="inputField" required>
+                    <option value="" disabled selected>Sélectionnez l'opérateur</option>
+                    <option value="Orange">Orange</option>
+                    <option value="Moov">Moov</option>
+                    <option value="Telecel">Telecel</option>
+                </select>
+            </div>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-phone"></i>
+                <input type="tel" id="recipientPhone" class="inputField" placeholder="Numéro qui reçoit" required>
+            </div>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-money-bill"></i>
+                <input type="number" id="amount" class="inputField" placeholder="Montant" required>
+            </div>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-globe"></i>
+                <select id="countryCode" class="inputField" required>
+                    <option value="" disabled selected>Code pays</option>
+                    <option value="+226">Burkina Faso (+226)</option>
+                </select>
+            </div>
+            <div class="inputContainer" id="waripayAccountContainer">
+                <i class="inputIcon fas fa-credit-card"></i>
+                <input type="text" id="waripayAccount" class="inputField" placeholder="Numéro de compte Waripay" required>
+            </div>
+            <button class="btn-primary" onclick="executeUnitPurchase()">Confirmer l'Achat</button>
+           
+        </div>
+    </div>
+
+    <!-- Modal pour Jeux -->
+    <div id="modal-1xbet" class="modal">
+        <div class="modal-content">
+            <h2 class="heading">Dépôt Jeux</h2>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-gamepad"></i>
+                <select id="bettingPlatform" class="inputField" required>
+                    <option value="" disabled selected>Sélectionnez la plateforme</option>
+                    <option value="1xBet">1xBet</option>
+                    <option value="Melbet">Melbet</option>
+                </select>
+            </div>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-id-card"></i>
+                <input type="text" id="accountId" class="inputField" placeholder="Numéro ou ID du compte" required>
+            </div>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-phone"></i>
+                <input type="tel" id="waripayPhone" class="inputField" placeholder="Numéro de téléphone Waripay" required>
+            </div>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-money-bill"></i>
+                <input type="number" id="amount" class="inputField" placeholder="Montant" required oninput="calculateFee()">
+            </div>
+            <div class="fee-display" id="feeDisplay">Frais: 0 XOF</div>
+            <button class="btn-primary" onclick="executeDeposit()">Confirmer le Dépôt</button>
+           
+        </div>
+    </div>
+
+    <!-- Modal pour TV -->
+    <div id="modal-tv" class="modal">
+        <div class="modal-content">
+            <h2 class="heading">TV</h2>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-tv"></i>
+                <select id="tvProvider" class="inputField" onchange="updateTVFields()" required>
+                    <option value="" disabled selected>Sélectionnez un fournisseur</option>
+                    <option value="CANAL+">CANAL+</option>
+                    <option value="AFRICA BOX">AFRICA BOX</option>
+                    <option value="MA TÉLÉ">MA TÉLÉ</option>
+                </select>
+            </div>
+            <div class="inputContainer" id="tvTypeContainer">
+                <i class="inputIcon fas fa-tv"></i>
+                <select id="tvType" class="inputField" onchange="updateTVFields()" required>
+                    <option value="" disabled selected>Type d'abonnement</option>
+                    <option value="abonnement">Abonnement</option>
+                    <option value="reabonnement">Réabonnement</option>
+                </select>
+            </div>
+            <div class="inputContainer" id="tvAbonnementContainer">
+                <i class="inputIcon fas fa-tv"></i>
+                <input type="text" id="tvAbonnement" class="inputField" placeholder="Numéro d'abonnement" required>
+            </div>
+            <div class="inputContainer" id="tvReabonnementContainer">
+                <i class="inputIcon fas fa-tv"></i>
+                <input type="text" id="tvReabonnement" class="inputField" placeholder="Numéro de réabonnement" required>
+            </div>
+            <div class="inputContainer" id="tvMonthContainer">
+                <i class="inputIcon fas fa-calendar"></i>
+                <select id="tvMonth" class="inputField" required>
+                    <option value="" disabled selected>Durée de l'abonnement</option>
+                    <option value="1 mois">1 mois</option>
+                    <option value="3 mois">3 mois</option>
+                    <option value="6 mois">6 mois</option>
+                    <option value="12 mois">12 mois</option>
+                </select>
+            </div>
+            <div class="inputContainer" id="tvReabonnementMonthContainer">
+                <i class="inputIcon fas fa-calendar"></i>
+                <select id="tvReabonnementMonth" class="inputField" required>
+                    <option value="" disabled selected>Durée du réabonnement</option>
+                    <option value="1 mois">1 mois</option>
+                    <option value="3 mois">3 mois</option>
+                    <option value="6 mois">6 mois</option>
+                    <option value="12 mois">12 mois</option>
+                </select>
+            </div>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-credit-card"></i>
+                <input type="text" id="waripayAccount" class="inputField" placeholder="Numéro de compte Waripay" required>
+            </div>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-globe"></i>
+                <select id="countryCode" class="inputField" required>
+                    <option value="" disabled selected>Code pays</option>
+                    <option value="+226">Burkina Faso (+226)</option>
+                    <option value="+223">Mali (+223)</option>
+                </select>
+            </div>
+            <button class="btn-primary" onclick="executeTVOperation()">Confirmer</button>
+           
+        </div>
+    </div>
+
+    <!-- Modal pour Facture -->
+    <div id="modal-facture" class="modal">
+        <div class="modal-content">
+            <h2 class="heading">Paiement de Factures</h2>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-file-invoice"></i>
+                <select id="factureService" class="inputField" onchange="updateFactureFields()" required>
+                    <option value="" disabled selected>Sélectionnez le fournisseur</option>
+                    <option value="ONEA">ONEA</option>
+                    <option value="SONABEL">SONABEL</option>
+                </select>
+            </div>
+            <div class="inputContainer" id="factureOneaContainer">
+                <i class="inputIcon fas fa-file-invoice"></i>
+                <input type="text" id="factureOnea" class="inputField" placeholder="Numéro de ligne ONEA" required>
+            </div>
+            <div class="inputContainer" id="factureSonabelContainer">
+                <i class="inputIcon fas fa-file-invoice"></i>
+                <input type="text" id="factureSonabel" class="inputField" placeholder="Numéro de compteur SONABEL" required>
+            </div>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-money-bill"></i>
+                <input type="number" id="factureAmount" class="inputField" placeholder="Montant" required>
+            </div>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-id-card"></i>
+                <input type="text" id="waripayAccount" class="inputField" placeholder="Numéro de compte Waripay" required>
+            </div>
+            <button class="btn-primary" onclick="executeFacturePayment()">Confirmer le Paiement</button>
+           
+        </div>
+    </div>
+
+    <!-- Modaux -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <div class="modal-icon success">✔</div>
+            <p id="modal-message"></p>
+            <button class="modal-button" onclick="closeModal('messageModal')">Fermer</button>
+        </div>
+    </div>
+
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Historique des Transactions</h2>
+            <ul id="modal-transaction-history"></ul>
+            <button class="modal-button" onclick="closeModal('historyModal')">Fermer</button>
+        </div>
+    </div>
+
+    <!-- Modal pour les opérations -->
+    <div id="operationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('operationModal')">×</span>
+            <h2 id="operationModalTitle"></h2>
+            <form id="operationForm">
+                <div class="inputContainer" id="recipientPhoneContainer">
+                    <i class="inputIcon fas fa-phone"></i>
+                    <input type="tel" id="recipientPhone" class="inputField" placeholder="Téléphone du destinataire (pour transfert)">
+                </div>
+                <div class="inputContainer">
+                    <i class="inputIcon fas fa-money-bill"></i>
+                    <input type="number" id="amount" class="inputField" placeholder="Montant" required>
+                </div>
+                <button type="submit" class="btn-primary">Confirmer</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('confirmationModal')">×</span>
+            <h2>Confirmation</h2>
+            <p id="confirmationMessage"></p>
+            <div class="inputContainer">
+                <i class="inputIcon fas fa-lock"></i>
+                <input type="password" id="confirmationPin" class="inputField" placeholder="Code Secret" required>
+            </div>
+            <button type="button" class="btn-primary" onclick="confirmOperation()">Valider</button>
+        </div>
+    </div>
+
+    <!-- Loader avec animation -->
+    <div id="loaderModal" class="loader-modal">
+        <div class="loader"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
