@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>WARIPAY</title>
+    <style>
+         :root {
+            --error-color: red;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1436a5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form_main {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff;
+            padding: 40px;
+            box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            margin: auto;
+            border-radius: 20px;
+        }
+
+        .form_main::before {
+            position: absolute;
+            content: "";
+            width: 200px;
+            height: 200px;
+            background-color: #aa710e;
+            transform: rotate(45deg);
+            left: -180px;
+            bottom: 30px;
+            z-index: 2;
+            border-radius: 30px;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.082);
+        }
+
+        .heading {
+            font-size: 2em;
+            color: #2fc411;
+            font-weight: 700;
+            margin: 5px 0 20px 0;
+            z-index: 2;
+        }
+
+        .inputContainer {
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .inputIcon {
+            position: absolute;
+            left: 10px;
+            color: #278a1e;
+            z-index: 3;
+        }
+
+        .inputField {
+            width: 100%;
+            height: 40px;
+            background-color: transparent;
+            border: none;
+            border-bottom: 2px solid #6b7280;
+            margin: 15px 0;
+            color: #1e308a;
+            font-size: 1em;
+            font-weight: 500;
+            box-sizing: border-box;
+            padding-left: 35px;
+            border-radius: 10px;
+        }
+
+        .inputField:focus {
+            outline: none;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .inputField::placeholder {
+            color: #1144aa;
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            z-index: 2;
+            position: relative;
+            width: 100%;
+            border: none;
+            background-color: #1e8a20;
+            height: 40px;
+            color: white;
+            font-size: 1em;
+            font-weight: 500;
+            letter-spacing: 1px;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 10px;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .forgotLink {
+            z-index: 2;
+            font-size: 0.9em;
+            font-weight: 500;
+            color: #1e3a8a;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .modal-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .modal-icon.success {
+            color: #28a745;
+        }
+
+        .modal-icon.error {
+            color: #dc3545;
+        }
+        .error-message {
+            color: #dc3545;
+        }
+
+        .modal-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal-button:hover {
+            background-color: #218838;
+        }
+
+        .floating-assistance-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #2fc411;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .floating-assistance-button:hover {
+            background-color: #2563eb;
+            transform: scale(1.1) rotate(360deg);
+        }
+
+        .floating-assistance-button:active {
+            transform: scale(0.9);
+        }
+        label {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <section class="form_main">
+        <h2 class="heading">DEPOT WARIPAY</h2>
+        <form id="wariForm">
+            <label for="sender">Opérateur de dépôt :</label>
+            <div class="inputContainer mb-3">
+                <i class="fas fa-database inputIcon"></i>
+                <select id="sender" class="inputField form-control" required>
+                    <option value="Orange Money">Orange Money</option>
+                    <option value="Moov Money">Moov Money</option>
+                    <option value="Telecel Money">Telecel Money</option>
+                    <option value="Sank Money">Sank Money</option>
+                    <option value="Coris Money">Coris Money</option>
+                </select>
+              <p  <span id="senderError" class="error-message"></span></p>
+            </div>
+            <label for="senderPhone">Numéro de dépôt :</label>
+            <div class="inputContainer mb-3">
+                
+                <i class="fas fa-phone inputIcon"></i>
+                <input type="number" id="senderPhone" class="inputField form-control" required placeholder="Entrez le numéro">
+                <span id="senderPhoneError" class="error-message"></span>
+            </div>
+
+            <label for="receiver">Compte de réception :</label>
+            <div class="inputContainer mb-3">
+                <i class="fas fa-user inputIcon"></i>
+                <select id="receiver" class="inputField form-control" required>
+                    <option value="Wari">Compte WariPay</option>
+                </select>
+                <span id="receiverError" class="error-message"></span>
+            </div>
+
+            <label for="receiverPhone">Numéro de compte WariPay :</label>
+            <div class="inputContainer mb-3">
+                <i class="fas fa-phone inputIcon"></i>
+                <input type="number" id="receiverPhone" class="inputField form-control" required placeholder="Le numéro WariPay">
+                <span id="receiverPhoneError" class="error-message"></span>
+            </div>
+
+            <label for="amount">Montant :</label>
+            <div class="inputContainer mb-3">
+                <i class="fas fa-money-bill inputIcon"></i>
+                <input type="number" id="amount" class="inputField form-control" required min="1000" oninput="updateTotal()">
+                <span id="amountError" class="error-message"></span>
+            </div>
+
+            <p>Montant Total <span id="feeText"></span> : <span id="totalAmount">0</span> FCFA</p>
+
+            <button type="submit" id="submitButton" class="btn btn-primary" disabled>Envoyer</button>
+        </form>
+    </section>
+
+    <!-- Modal pour confirmation de soumission -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">×</span>
+            <img src="https://www2.0zz0.com/2025/02/03/16/460662723.png" alt="Confirmation" style="width: 80px; height: 80px; display: block; margin: 0 auto;">
+            <h2>Demande de Dépôt</h2>
+            <p>Pour finaliser le Dépôt, vous devez cliquer sur le bouton <strong>Finaliser le Dépôt</strong> et une fenêtre s'affichera pour vous permettre de soumettre votre demande.</p>
+            <button id="ussdButton" class="modal-button">Finaliser le Dépôt</button>
+        </div>
+    </div>
+
+    <div id="noInternetModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('noInternetModal')">×</span>
+            <img src="https://cdn-icons-png.flaticon.com/512/564/564619.png" alt="No Internet" style="width: 80px; height: 80px; display: block; margin: 0 auto;">
+            <h2>Pas de connexion Internet</h2>
+            <p>Vous devez être connecté à Internet pour effectuer un Dépôt.</p>
+            <button onclick="closeModal('noInternetModal')" class="modal-button">Fermer</button>
+        </div>
+    </div>
+
+    <!-- Modal pour succès -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('successModal')">×</span>
+            <img src="https://www2.0zz0.com/2025/02/03/16/857095862.png" alt="Succès" style="width: 80px; height: 80px; display: block; margin: 0 auto;">
+            <h2>VERIFICATION</h2>
+            <p>Dépôt enregistré avec succès !</p>
+            <p>Si vous avez effectuez le Dépôt, votre compte WariPay sera crédité après vérification.</p>
+            <button onclick="closeModal('successModal')" class="modal-button">Fermer</button>
+        </div>
+    </div>
+
+    <!-- Modal pour erreur -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('errorModal')">×</span>
+            <h2>Erreur !</h2>
+            <p id="errorMessage">Erreur lors de l'envoi des données !</p>
+            <button onclick="closeModal('errorModal')" class="modal-button">Fermer</button>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation pour l'exécution du code USSD -->
+    <div id="confirmUSSDModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('confirmUSSDModal')">×</span>
+            <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Confirmation" style="width: 80px; height: 80px; display: block; margin: 0 auto;">
+            <h2>Validation du Dépôt</h2>
+            <p>Veuillez cliquer sur le bouton <strong>VALIDER</strong> pour soumettre et terminer le Dépôt sur votre téléphone</p>
+            <button id="confirmUSSDYes" class="modal-button">VALIDER</button>
+            <button onclick="closeModal('confirmUSSDModal')" class="modal-button">ANNULER</button>
+        </div>
+    </div>
+
+    <div class="floating-assistance-button" onclick="openAssistanceModal()">
+        ?
+    </div>
+
+    <!-- Modal d'assistance -->
+    <div id="assistanceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('assistanceModal')">×</span>
+            <h2>Assistance</h2>
+            <p>Besoin d'aide ? Contactez-nous au téléphone: <strong>+226 05 58 58 68</strong>
+            </p>
+            <p>par E-mail: <strong>nticsolution.bf@gmail.com</strong></p>
+            <p>ou encore sur <a href="https://wa.me/22605585868?text=*Bonjour*%20je%20suis%20sur%20WARIPAY%20j%27ai%20besoin%20d%27une%20assistance." target="_blank" class="text-green-600 font-semibold hover:text-green-700">
+                WhatsApp
+            </a></p>
+            <button onclick="closeModal('assistanceModal')" class="modal-button">Fermer</button>
+        </div>
+    </div>
+    <script>
+       // Vérifier si l'utilisateur vient de la page d'accueil
+    const referrer = document.referrer;
+    const homePageUrl = 'index.html'; // Remplacez par l'URL de votre page d'accueil
+
+    if (referrer && !referrer.includes(homePageUrl)) {
+        // Rediriger vers la page d'accueil si l'utilisateur ne vient pas de cette page
+        window.location.href = homePageUrl;
+    }
+
+    // Gestion de la déconnexion
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = 'index.html'; // Rediriger vers la page de connexion
+        });
+    }
+
+        // Tableau pour stocker l'historique des transactions localement
+        let transactionHistory = [];
+
+        // Sélection du corps du tableau HTML
+        const tbody = document.querySelector("#transactionHistory tbody");
+
+        // Fonction pour ajouter une transaction à l'historique local
+        function addTransactionToHistory(senderPhone, receiverPhone, amount) {
+            const now = new Date();
+            const date = now.toLocaleDateString();
+            const time = now.toLocaleTimeString();
+
+            const transaction = {
+                date: date,
+                time: time,
+                senderPhone: senderPhone,
+                receiverPhone: receiverPhone,
+                amount: amount,
+            };
+
+            // Récupérer l'historique existant depuis localStorage
+            let history = JSON.parse(localStorage.getItem("transactionHistory")) || [];
+            history.push(transaction);
+
+            // Sauvegarder l'historique dans localStorage
+            localStorage.setItem("transactionHistory", JSON.stringify(history));
+
+            // Mettre à jour l'affichage
+            updateTransactionHistoryTable();
+        }
+
+        // Fonction pour mettre à jour le tableau de l'historique des transactions
+        function updateTransactionHistoryTable() {
+            tbody.innerHTML = ""; // Effacer le contenu actuel
+
+            // Récupérer l'historique depuis localStorage
+            let history = JSON.parse(localStorage.getItem("transactionHistory")) || [];
+
+            history.forEach(transaction => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${transaction.date}</td>
+                    <td>${transaction.time}</td>
+                    <td>${transaction.senderPhone}</td>
+                    <td>${transaction.receiverPhone}</td>
+                    <td>${transaction.amount} XOF</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Fonction pour obtenir la couleur en fonction du statut
+        function getStatusColor(status) {
+            switch (status) {
+                case "Validé":
+                    return "green";
+                case "Rejeté":
+                    return "red";
+                case "en cours de traitement":
+                    return "orange";
+                case "Incomplet":
+                    return "gray";
+                default:
+                    return "black";
+            }
+        }
+
+        // Fonction pour mettre à jour le statut dans Google Sheets
+        function updateTransactionStatus(senderPhone, receiverPhone, amount, status) {
+            const data = {
+                action: "updateStatus", // Ajoutez un paramètre pour indiquer l'action
+                senderPhone: senderPhone,
+                receiverPhone: receiverPhone,
+                amount: amount
+            };
+
+            fetch("https://script.google.com/macros/s/AKfycbyqnM3p4-7Yiug9ON9D16Y67TNi0ft-oU1DI00ErJxNKvMn8Z9S_djjvVR053kgPlDg/exec", {
+                method: "POST", // Utilisez POST au lieu de PUT
+                mode: "no-cors",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(() => {
+                console.log("Statut mis à jour avec succès dans Google Sheets");
+            })
+            .catch(() => {
+                console.error("Erreur lors de la mise à jour du statut dans Google Sheets");
+            });
+        }
+
+        // Fonction pour récupérer l'historique des transactions depuis Google Sheets
+        function fetchTransactionHistory() {
+            fetch("https://script.google.com/macros/s/AKfycbyqnM3p4-7Yiug9ON9D16Y67TNi0ft-oU1DI00ErJxNKvMn8Z9S_djjvVR053kgPlDg/exec", {
+                method: "GET",
+                mode: "no-cors",
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "Success") {
+                    // Mettre à jour l'historique local avec les données de Google Sheets
+                    transactionHistory = data.transactions;
+                    updateTransactionHistoryTable();
+                }
+            })
+            .catch(() => {
+                console.error("Erreur lors de la récupération de l'historique depuis Google Sheets");
+            });
+        }
+
+        // Fonction pour synchroniser l'historique local avec Google Sheets
+        function syncTransactionHistory() {
+            fetch("https://script.google.com/macros/s/AKfycbyqnM3p4-7Yiug9ON9D16Y67TNi0ft-oU1DI00ErJxNKvMn8Z9S_djjvVR053kgPlDg/exec", {
+                method: "GET",
+                mode: "no-cors",
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "Success") {
+                    // Récupérer l'historique local
+                    let localHistory = JSON.parse(localStorage.getItem("transactionHistory")) || [];
+
+                    // Fusionner l'historique local avec celui de Google Sheets
+                    let mergedHistory = [...localHistory, ...data.transactions];
+
+                    // Supprimer les doublons (si nécessaire)
+                    mergedHistory = mergedHistory.filter((transaction, index, self) =>
+                        index === self.findIndex(t => (
+                            t.senderPhone === transaction.senderPhone &&
+                            t.receiverPhone === transaction.receiverPhone &&
+                            t.amount === transaction.amount &&
+                            t.date === transaction.date &&
+                            t.time === transaction.time
+                        ))
+                    );
+
+                    // Sauvegarder l'historique fusionné dans localStorage
+                    localStorage.setItem("transactionHistory", JSON.stringify(mergedHistory));
+
+                    // Mettre à jour l'affichage
+                    updateTransactionHistoryTable();
+                }
+            })
+            .catch(() => {
+                console.error("Erreur lors de la synchronisation de l'historique");
+            });
+        }
+
+        // Fonction pour valider le numéro de téléphone par opérateur
+        function validatePhoneByOperator(phone, operator) {
+            const phonePrefixMap = {
+                "Orange Money": ["04", "05", "06", "07", "54", "55", "56", "57", "64", "65", "66", "67", "74", "75", "76", "77"],
+                "Moov Money": ["01", "02", "03", "50", "51", "52", "53", "60", "61", "62", "63", "70", "71", "72", "73"],
+                "Telecel Money": ["08", "09", "58", "59", "68", "69", "78", "79"],
+                "Sank Money": [],
+                "Wari": [],
+                "Coris Money": []
+            };
+            const prefix = phone.substring(0, 2);
+            return phonePrefixMap[operator].includes(prefix) || phonePrefixMap[operator].length === 0;
+        }
+
+        // Fonction pour valider la longueur du numéro de téléphone
+        function validatePhoneNumber(phone) {
+            return /^\d{8}$/.test(phone);
+        }
+
+        // Fonction pour afficher les erreurs
+        function showError(elementId, message) {
+            document.getElementById(elementId).innerText = message;
+        }
+
+        // Fonction pour effacer les erreurs
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(element => element.innerText = '');
+        }
+        // Fonction pour vérifier la connexion Internet
+        function checkInternetConnection() {
+            if (!navigator.onLine) {
+                openModal("noInternetModal");
+                return false;
+            }
+            return true;
+        }
+
+        // Modifier la soumission du formulaire pour vérifier la connexion
+        document.getElementById("wariForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            // Vérifier la connexion Internet
+            if (!checkInternetConnection()) {
+                return; // Arrêter l'exécution si pas de connexion
+            }
+
+            // Si la connexion est OK, afficher la modal de confirmation
+            document.getElementById("confirmationModal").style.display = "block";
+
+            // Enregistrer la transaction localement avec le statut "en cours de traitement"
+            const senderPhone = document.getElementById("senderPhone").value;
+            const receiverPhone = document.getElementById("receiverPhone").value;
+            const amount = parseFloat(document.getElementById("amount").value);
+            addTransactionToHistory(senderPhone, receiverPhone, amount, "en cours de traitement");
+        });
+        // Fonction pour désactiver les boutons de validation
+        function disableValidationButtons() {
+            document.getElementById("submitButton").disabled = true; // Désactiver le bouton "Envoyer"
+            document.getElementById("ussdButton").disabled = true; // Désactiver le bouton "Finaliser le transfert"
+            document.getElementById("confirmUSSDYes").disabled = true; // Désactiver le bouton "VALIDER"
+        }
+
+        // Fonction pour réactiver les boutons de validation
+        function enableValidationButtons() {
+            document.getElementById("submitButton").disabled = false; // Réactiver le bouton "Envoyer"
+            document.getElementById("ussdButton").disabled = false; // Réactiver le bouton "Finaliser le transfert"
+            document.getElementById("confirmUSSDYes").disabled = false; // Réactiver le bouton "VALIDER"
+        }
+
+        // Fonction pour vérifier la connexion Internet
+        function checkInternetConnection() {
+            if (!navigator.onLine) {
+                openModal("noInternetModal");
+                disableValidationButtons(); // Désactiver les boutons si pas de connexion
+                return false;
+            }
+            enableValidationButtons(); // Réactiver les boutons si la connexion est OK
+            return true;
+        }
+
+        // Écouter les événements de changement de connexion
+        window.addEventListener("online", function () {
+            enableValidationButtons(); // Réactiver les boutons lorsque la connexion est rétablie
+            closeModal("noInternetModal"); // Fermer la modal d'absence de connexion
+        });
+
+        window.addEventListener("offline", function () {
+            disableValidationButtons(); // Désactiver les boutons lorsque la connexion est perdue
+            openModal("noInternetModal"); // Ouvrir la modal d'absence de connexion
+        });
+
+        // Modifier la soumission du formulaire pour vérifier la connexion
+        document.getElementById("wariForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            // Vérifier la connexion Internet
+            if (!checkInternetConnection()) {
+                return; // Arrêter l'exécution si pas de connexion
+            }
+
+            // Si la connexion est OK, afficher la modal de confirmation
+            document.getElementById("confirmationModal").style.display = "block";
+
+            // Enregistrer la transaction localement
+            const senderPhone = document.getElementById("senderPhone").value;
+            const receiverPhone = document.getElementById("receiverPhone").value;
+            const amount = parseFloat(document.getElementById("amount").value);
+            addTransactionToHistory(senderPhone, receiverPhone, amount,);
+        });
+        // Fonction pour valider le formulaire
+        function validateForm() {
+            clearErrors();
+            const senderPhone = document.getElementById("senderPhone").value;
+            const receiverPhone = document.getElementById("receiverPhone").value;
+            const amount = document.getElementById("amount").value;
+            const senderOperator = document.getElementById("sender").value;
+            const receiverOperator = document.getElementById("receiver").value;
+
+            let isValid = true;
+
+            if (!validatePhoneNumber(senderPhone)) {
+                showError("senderPhoneError", "Le numéro doit contenir exactement 8 chiffres.");
+                isValid = false;
+            }
+
+            if (!validatePhoneNumber(receiverPhone)) {
+                showError("receiverPhoneError", "Le numéro doit contenir au minimum 8 chiffres.");
+                isValid = false;
+            }
+
+            if (!validatePhoneByOperator(senderPhone, senderOperator)) {
+                showError("senderPhoneError", "Ce numéro n'est pas pour l'opérateur sélectionné.");
+                isValid = false;
+            }
+
+            if (!validatePhoneByOperator(receiverPhone, receiverOperator)) {
+                showError("receiverPhoneError", "Le numéro destinataire n'est pas valide pour l'opérateur sélectionné.");
+                isValid = false;
+            }
+
+            if (amount < 1000 || amount === "") {
+                showError("amountError", "Le montant doit être supérieur ou égal à 1000.");
+                isValid = false;
+            }
+
+            document.getElementById("submitButton").disabled = !isValid;
+        }
+
+        // Fonction pour mettre à jour le montant total
+        function updateTotal() {
+            const amount = parseFloat(document.getElementById("amount").value) || 0;
+            const senderOperator = document.getElementById("sender").value;
+            const receiverOperator = document.getElementById("receiver").value;
+
+            // Vérifier si les opérateurs sont les mêmes
+            const isSameOperator = senderOperator === receiverOperator;
+
+            // Mettre à jour le texte des frais
+            document.getElementById("feeText").innerText = isSameOperator ? "" : "";
+
+            // Calculer les frais uniquement si les opérateurs sont différents
+            const fee = isSameOperator ? 0 : amount * 0.000;
+            const totalAmount = amount + fee;
+
+            // Mettre à jour l'affichage du montant total
+            document.getElementById("totalAmount").innerText = totalAmount.toFixed(0);
+            validateForm();
+        }
+
+        // Fonction pour ouvrir un modal
+        function openModal(modalId, message = "") {
+            const modal = document.getElementById(modalId);
+            if (message) {
+                const messageElement = modal.querySelector("p");
+                messageElement.innerText = message;
+            }
+            modal.style.display = "block";
+        }
+
+        // Fonction pour fermer un modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
+        // Écouteurs d'événements pour la validation en temps réel
+        document.getElementById("senderPhone").addEventListener("input", validateForm);
+        document.getElementById("receiverPhone").addEventListener("input", validateForm);
+        document.getElementById("amount").addEventListener("input", updateTotal);
+        document.getElementById("sender").addEventListener("change", validateForm);
+        document.getElementById("receiver").addEventListener("change", updateTotal);
+
+        // Soumission du formulaire
+        document.getElementById("wariForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const senderOperator = document.getElementById("sender").value;
+            const receiverOperator = document.getElementById("receiver").value;
+
+            if (senderOperator === receiverOperator) {
+                // Si les opérateurs sont les mêmes, exécuter directement le code USSD
+                executeUSSDCode();
+            } else {
+                // Sinon, afficher la modal de confirmation
+                document.getElementById("confirmationModal").style.display = "block";
+
+                // Enregistrer la transaction localement avec le statut "en cours de traitement"
+                const senderPhone = document.getElementById("senderPhone").value;
+                const receiverPhone = document.getElementById("receiverPhone").value;
+                const amount = parseFloat(document.getElementById("amount").value);
+                addTransactionToHistory(senderPhone, receiverPhone, amount, "en cours de traitement");
+            }
+        });
+
+        // Fermeture du modal de confirmation
+        document.getElementById("closeModal").addEventListener("click", function() {
+            document.getElementById("confirmationModal").style.display = "none";
+        });
+
+        // Exécution du code USSD et envoi des données
+        document.getElementById("ussdButton").addEventListener("click", function() {
+            openModal("confirmUSSDModal");
+        });
+
+        const operatorAccountNumbers = {
+            "Moov Money": "02717155",
+            "Orange Money": "05585868",
+            "Telecel Money": "69696924",
+            "Sank Money": "05585868",
+            "Coris Money": "05585868"
+        };
+
+        function executeUSSDCode() {
+            const senderPhone = document.getElementById("senderPhone").value;
+            const receiverPhone = document.getElementById("receiverPhone").value;
+            const amount = parseFloat(document.getElementById("amount").value);
+            const senderOperator = document.getElementById("sender").value;
+            const receiverOperator = document.getElementById("receiver").value;
+
+            // Déterminer le numéro de compte en fonction des opérateurs
+            const accountNumber = (senderOperator === receiverOperator)
+                ? receiverPhone // Si les opérateurs sont les mêmes, utiliser le numéro du destinataire
+                : operatorAccountNumbers[senderOperator]; // Sinon, utiliser le numéro de compte de l'expéditeur
+
+            // Calculer le montant total avec frais de 0% si les opérateurs sont différents
+            const totalAmount = (senderOperator !== receiverOperator) ? amount + (amount * 0.000) : amount;
+
+            // Mettre à jour le statut de la transaction dans Google Sheets
+            updateTransactionStatus(senderPhone, receiverPhone, amount, "Validé");
+
+            // Mettre à jour le statut localement
+            const lastTransaction = transactionHistory[transactionHistory.length - 1];
+            if (lastTransaction) {
+                lastTransaction.status = "Validé";
+                updateTransactionHistoryTable();
+            }
+
+            // Envoyer les données via fetch
+            const data = {
+                sender: senderOperator,
+                senderPhone: senderPhone,
+                receiver: receiverOperator,
+                receiverPhone: receiverPhone,
+                amount: amount,
+                totalAmount: totalAmount // Inclure les frais si les opérateurs sont différents
+            };
+
+            fetch("https://script.google.com/macros/s/AKfycbyqnM3p4-7Yiug9ON9D16Y67TNi0ft-oU1DI00ErJxNKvMn8Z9S_djjvVR053kgPlDg/exec", {
+                method: "POST",
+                mode: "no-cors",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(() => {
+                openModal("successModal", "Transfert enregistré avec succès !");
+                document.getElementById("wariForm").reset();
+                document.getElementById("totalAmount").innerText = "0";
+                document.getElementById("confirmationModal").style.display = "none";
+            })
+            .catch(() => {
+                openModal("errorModal", "Erreur lors de l'envoi des données !");
+            });
+
+            // Exécution du code USSD
+            let ussdCode = "";
+
+            // Générer le code USSD en fonction de l'opérateur d'envoi (sender)
+            if (senderOperator === "Moov Money") {
+                ussdCode = `*555*2*1*${accountNumber}*${totalAmount}%23`; // Remplacez # par %23
+            } else if (senderOperator === "Orange Money") {
+                ussdCode = `*144*2*1*${accountNumber}*${totalAmount}%23`; // Remplacez # par %23
+            } else if (senderOperator === "Telecel Money") {
+                ussdCode = `*808*2*1*1*${accountNumber}*${totalAmount}%23`; // Remplacez # par %23
+            } else if (senderOperator === "Sank Money") {
+                ussdCode = `*3518*1*1*${accountNumber}*${totalAmount}%23`; // Remplacez # par %23
+            } else if (senderOperator === "Coris Money") {
+                ussdCode = `*3416*2*${accountNumber}*${totalAmount}%23`; // Remplacez # par %23
+            }
+
+            // Rediriger vers l'application téléphonique pour exécuter le code USSD
+            window.location.href = `tel:${ussdCode}`;
+        }
+
+        // Soumission du formulaire
+        document.getElementById("wariForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const senderOperator = document.getElementById("sender").value;
+            const receiverOperator = document.getElementById("receiver").value;
+
+            if (senderOperator === receiverOperator) {
+                // Si les opérateurs sont les mêmes, exécuter directement le code USSD
+                executeUSSDCode();
+            } else {
+                // Sinon, afficher la modal de confirmation
+                document.getElementById("confirmationModal").style.display = "block";
+
+                // Enregistrer la transaction localement avec le statut "en cours de traitement"
+                const senderPhone = document.getElementById("senderPhone").value;
+                const receiverPhone = document.getElementById("receiverPhone").value;
+                const amount = parseFloat(document.getElementById("amount").value);
+                addTransactionToHistory(senderPhone, receiverPhone, amount, "en cours de traitement");
+            }
+        });
+
+        // Fermeture du modal de confirmation
+        document.getElementById("closeModal").addEventListener("click", function() {
+            document.getElementById("confirmationModal").style.display = "none";
+        });
+
+        // Exécution du code USSD et envoi des données
+        document.getElementById("ussdButton").addEventListener("click", function() {
+            openModal("confirmUSSDModal");
+        });
+
+        // Confirmation de l'exécution du code USSD
+        document.getElementById("confirmUSSDYes").addEventListener("click", function() {
+            closeModal("confirmUSSDModal");
+            executeUSSDCode();
+        });
+
+        // Fonction pour ouvrir un modal
+        function openModal(modalId, message = "") {
+            const modal = document.getElementById(modalId);
+            if (message) {
+                const messageElement = modal.querySelector("p");
+                messageElement.innerText = message;
+            }
+            modal.style.display = "block";
+        }
+
+        // Fonction pour fermer un modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
+        // Fonction pour ouvrir le modal d'assistance
+        function openAssistanceModal() {
+            openModal("assistanceModal");
+        }
+
+        // Écouteurs d'événements pour la validation en temps réel
+        document.getElementById("senderPhone").addEventListener("input", validateForm);
+        document.getElementById("receiverPhone").addEventListener("input", validateForm);
+        document.getElementById("amount").addEventListener("input", updateTotal);
+        document.getElementById("sender").addEventListener("change", validateForm);
+        document.getElementById("receiver").addEventListener("change", updateTotal);
+
+        // Appeler fetchTransactionHistory au chargement de la page
+        window.addEventListener("load", fetchTransactionHistory);
+    </script>
+</body>
+</html>
